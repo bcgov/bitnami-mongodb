@@ -36,8 +36,10 @@ if am_i_root; then
     fi
 else
     if is_boolean_yes "$MONGODB_ENABLE_NUMACTL"; then
-        exec numactl --interleave=all "$cmd" "${flags[@]}"
+        numactl --interleave=all "$cmd" "${flags[@]}"
     else
-        exec "$cmd" "${flags[@]}"
+        "$cmd" "${flags[@]}"
     fi
 fi
+
+wait $(pgrep --parent 1 mongod) && echo "Quitting: mongod has stopped or died"
